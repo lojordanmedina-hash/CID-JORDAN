@@ -1,16 +1,18 @@
-import streamlit as st
+﻿import streamlit as st
 import sqlite3
 import pandas as pd
 import os
 import hashlib
 import hmac
 from io import BytesIO
-from referencias import modulo_referencias  # ✅ IMPORT CORRECTO
-from ver_candidatos import ver_candidatos   # ✅ IMPORT CORRECTO
+from referencias import modulo_referencias  # âœ… IMPORT CORRECTO
+from ver_candidatos import ver_candidatos   # âœ… IMPORT CORRECTO
 from editar_candidatos import editar_candidato
 
-# ---------------- CONFIGURACIÓN ----------------
-st.set_page_config(page_title="Sistema de Selección", layout="wide")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.path.join(BASE_DIR, "seleccion_personal.db")
+# ---------------- CONFIGURACIÃ“N ----------------
+st.set_page_config(page_title="Sistema de SelecciÃ³n", layout="wide")
 def generar_hash_password(password):
     return hashlib.sha256(password.encode("utf-8")).hexdigest()
 
@@ -33,7 +35,7 @@ def login_admin():
     st.sidebar.subheader("Acceso privado")
 
     password = st.sidebar.text_input(
-        "Contraseña",
+        "ContraseÃ±a",
         type="password"
     )
 
@@ -42,14 +44,14 @@ def login_admin():
             st.session_state.admin_autenticado = True
             st.rerun()
         else:
-            st.sidebar.error("Contraseña incorrecta")
+            st.sidebar.error("ContraseÃ±a incorrecta")
 
     return False
 
 
 def cerrar_sesion():
     if st.session_state.get("admin_autenticado", False):
-        if st.sidebar.button("Cerrar sesión"):
+        if st.sidebar.button("Cerrar sesiÃ³n"):
             st.session_state.admin_autenticado = False
             st.rerun()
 
@@ -126,14 +128,14 @@ div[role="radiogroup"] label:hover{
     background:var(--navy-soft) !important;
 }
 
-/* Texto del menú */
+/* Texto del menÃº */
 div[role="radiogroup"] p{
     color:var(--white) !important;
     font-size:15px;
     font-weight:600;
 }
 
-/* ====== TÍTULOS ====== */
+/* ====== TÃTULOS ====== */
 
 h1{
     color:var(--gold) !important;
@@ -187,7 +189,7 @@ label{
     fill:var(--gold) !important;
 }
 
-/* Menú desplegable del selectbox */
+/* MenÃº desplegable del selectbox */
 div[data-baseweb="popover"],
 div[data-baseweb="menu"],
 ul[role="listbox"],
@@ -241,7 +243,7 @@ button[kind="primaryFormSubmit"]:hover{
     color:var(--navy) !important;
 }
 
-/* ====== CAMPOS VACÍOS / PLACEHOLDER ====== */
+/* ====== CAMPOS VACÃOS / PLACEHOLDER ====== */
 
 input::placeholder,
 textarea::placeholder{
@@ -285,11 +287,55 @@ div[data-testid="stForm"]{
 
 """, unsafe_allow_html=True)
 
-# ---------------- CONEXIÓN ----------------
-conn = sqlite3.connect("seleccion_personal.db", check_same_thread=False)
+# ---------------- CONEXIÃ“N ----------------
+conn = sqlite3.connect(DB_PATH, check_same_thread=False)
 cursor = conn.cursor()
+
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS candidatos (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nombre_completo TEXT,
+    cargo_postula TEXT,
+    edad INTEGER,
+    estado_civil TEXT,
+    hijos INTEGER,
+    formacion_tercer_nivel TEXT,
+    titulo_cuarto_nivel TEXT,
+    anos_experiencia INTEGER,
+    empresa TEXT,
+    cargo TEXT,
+    actividades TEXT,
+    sueldo_ultimo REAL,
+    motivo_salida TEXT,
+    disponibilidad TEXT,
+    observaciones TEXT,
+    fecha_registro TEXT,
+    estado_proceso TEXT DEFAULT 'ACTIVO',
+    estado_evaluacion TEXT DEFAULT 'Pendiente',
+    comentario_interno TEXT
+)
+""")
+
 cursor.execute("PRAGMA table_info(candidatos)")
 columnas_candidatos = [fila[1] for fila in cursor.fetchall()]
+
+columnas_requeridas = {
+    "cargo_postula": "TEXT",
+    "hijos": "INTEGER",
+    "formacion_tercer_nivel": "TEXT",
+    "titulo_cuarto_nivel": "TEXT",
+    "empresa": "TEXT",
+    "cargo": "TEXT",
+    "actividades": "TEXT",
+    "sueldo_ultimo": "REAL",
+    "motivo_salida": "TEXT",
+    "fecha_registro": "TEXT",
+    "estado_proceso": "TEXT DEFAULT 'ACTIVO'",
+}
+
+for columna, tipo in columnas_requeridas.items():
+    if columna not in columnas_candidatos:
+        cursor.execute(f"ALTER TABLE candidatos ADD COLUMN {columna} {tipo}")
 
 if "estado_evaluacion" not in columnas_candidatos:
     cursor.execute("ALTER TABLE candidatos ADD COLUMN estado_evaluacion TEXT DEFAULT 'Pendiente'")
@@ -302,17 +348,24 @@ conn.commit()
 # LOGO DE LA EMPRESA
 # ===========================================================
 
-ruta_logo = os.path.join("Assets", "logo.png")
+rutas_logo = [
+    os.path.join(BASE_DIR, "Assets", "logo.png"),
+    os.path.join(BASE_DIR, "assets", "logo.png"),
+    os.path.join(BASE_DIR, "Assets", "Logo.png"),
+    os.path.join(BASE_DIR, "assets", "Logo.png"),
+]
 
-if os.path.exists(ruta_logo):
+ruta_logo = next((ruta for ruta in rutas_logo if os.path.exists(ruta)), None)
+
+if ruta_logo:
     st.sidebar.image(ruta_logo, width=220)
 else:
-    st.sidebar.warning("⚠️ No se encontró el logo en Assets/logo.png")
+    st.sidebar.warning("âš ï¸ No se encontrÃ³ el logo en Assets/logo.png")
 
 st.sidebar.markdown("""
 <div style="text-align:center;">
     <h2 style="color:white; margin-bottom:5px;">
-        Sistema de Selección
+        Sistema de SelecciÃ³n
     </h2>
     <p style="color:#cbd5e1; margin-top:0;">
         Departamento de Talento Humano
@@ -322,8 +375,8 @@ st.sidebar.markdown("""
 
 st.sidebar.markdown("---")
 
-# ---------------- MENÚ ----------------
-st.sidebar.title("Menú")
+# ---------------- MENÃš ----------------
+st.sidebar.title("MenÃº")
 
 admin_activo = login_admin()
 
@@ -339,12 +392,12 @@ if admin_activo:
 cerrar_sesion()
 
 menu = st.sidebar.radio(
-    "Seleccione una opción",
+    "Seleccione una opciÃ³n",
     opciones_menu
 )
 
 # =================================================
-# ➕ REGISTRAR CANDIDATO
+# âž• REGISTRAR CANDIDATO
 # =================================================
 if menu == "Registrar candidato":
 
@@ -352,37 +405,37 @@ if menu == "Registrar candidato":
 
     with st.form("form_candidato"):
 
-        st.subheader("🧑 Datos personales")
+        st.subheader("ðŸ§‘ Datos personales")
         nombre = st.text_input("Nombre completo")
         edad = st.number_input("Edad", 18, 80)
         estado_civil = st.selectbox(
             "Estado civil",
-            ["Soltero/a", "Casado/a", "Unión libre", "Divorciado/a", "Viudo/a"]
+            ["Soltero/a", "Casado/a", "UniÃ³n libre", "Divorciado/a", "Viudo/a"]
         )
-        hijos = st.number_input("Número de hijos", 0, 10)
+        hijos = st.number_input("NÃºmero de hijos", 0, 10)
 
-        st.subheader("🎓 Formación académica")
-        formacion_tercer = st.selectbox("Formación tercer nivel", ["Sí", "No"])
-        titulo_cuarto = st.text_input("Título de cuarto nivel")
+        st.subheader("ðŸŽ“ FormaciÃ³n acadÃ©mica")
+        formacion_tercer = st.selectbox("FormaciÃ³n tercer nivel", ["SÃ­", "No"])
+        titulo_cuarto = st.text_input("TÃ­tulo de cuarto nivel")
 
-        st.subheader("💼 Experiencia laboral")
-        anos_experiencia = st.number_input("Años de experiencia", 0, 40)
-        empresa = st.text_input("Última empresa")
-        cargo = st.text_input("Último cargo")
+        st.subheader("ðŸ’¼ Experiencia laboral")
+        anos_experiencia = st.number_input("AÃ±os de experiencia", 0, 40)
+        empresa = st.text_input("Ãšltima empresa")
+        cargo = st.text_input("Ãšltimo cargo")
         actividades = st.text_area("Actividades realizadas")
-        sueldo_ultimo = st.number_input("Último sueldo", min_value=0.0, step=10.0)
+        sueldo_ultimo = st.number_input("Ãšltimo sueldo", min_value=0.0, step=10.0)
         motivo_salida = st.text_input("Motivo de salida")
 
-        st.subheader("📌 Postulación")
+        st.subheader("ðŸ“Œ PostulaciÃ³n")
         cargo_postula = st.text_input("Cargo al que postula")
         disponibilidad = st.selectbox(
             "Disponibilidad",
-            ["Inmediata", "15 días", "30 días", "A convenir"]
+            ["Inmediata", "15 dÃ­as", "30 dÃ­as", "A convenir"]
         )
 
         observaciones = st.text_area("Observaciones")
 
-        guardar = st.form_submit_button("💾 Guardar candidato")
+        guardar = st.form_submit_button("ðŸ’¾ Guardar candidato")
 
     if guardar:
         cursor.execute("""
@@ -422,7 +475,7 @@ if menu == "Registrar candidato":
         ))
 
         conn.commit()
-        st.success("✅ Candidato registrado correctamente")
+        st.success("âœ… Candidato registrado correctamente")
 
 # =================================================
 # VER CANDIDATOS
@@ -431,16 +484,16 @@ elif menu == "Ver candidatos":
     ver_candidatos()
 
 # =================================================
-# ✏️ EDITAR CANDIDATO
+# âœï¸ EDITAR CANDIDATO
 # =================================================
 elif menu == "Editar candidato":
     editar_candidato()
 
 # =================================================
-# 📞 REFERENCIAS LABORALES
+# ðŸ“ž REFERENCIAS LABORALES
 # =================================================
 elif menu == "Referencias laborales":
-    modulo_referencias()   # ✅ LLAMADA AL MÓDULO
+    modulo_referencias()   # âœ… LLAMADA AL MÃ“DULO
 
 # ---------------- CIERRE ----------------
 conn.close()
