@@ -47,6 +47,21 @@ def eliminar_candidato(conn, candidato_id):
     conn.commit()
 
 
+def texto_campo(fila, columna):
+    valor = fila.get(columna, "")
+    return valor if pd.notnull(valor) else ""
+
+
+def entero_campo(fila, columna, defecto):
+    try:
+        valor = fila.get(columna, defecto)
+        if pd.isnull(valor) or valor == "":
+            return defecto
+        return int(valor)
+    except (TypeError, ValueError):
+        return defecto
+
+
 def editar_candidato():
     conn = sqlite3.connect(DB_PATH, check_same_thread=False)
     asegurar_columnas_evaluacion(conn)
@@ -83,35 +98,34 @@ def editar_candidato():
             "Edad",
             min_value=18,
             max_value=80,
-            value=int(fila["edad"]) if pd.notnull(fila["edad"]) else 18
+            value=entero_campo(fila, "edad", 18)
         )
 
         estado = st.text_input(
             "Estado civil",
-            fila["estado_civil"] if pd.notnull(fila["estado_civil"]) else ""
+            texto_campo(fila, "estado_civil")
         )
 
         cargo_postula = st.text_input(
             "Cargo al que postula",
-            fila["cargo_postula"] if pd.notnull(fila["cargo_postula"]) else ""
+            texto_campo(fila, "cargo_postula")
         )
 
         experiencia = st.number_input(
             "Años experiencia",
             min_value=0,
             max_value=40,
-            value=int(fila["anos_experiencia"]) if pd.notnull(fila["anos_experiencia"]) else 0
+            value=entero_campo(fila, "anos_experiencia", 0)
         )
 
         observaciones = st.text_area(
             "Observaciones",
-            fila["observaciones"] if pd.notnull(fila["observaciones"]) else ""
+            texto_campo(fila, "observaciones")
         )
 
         estado_actual = (
-            fila["estado_evaluacion"]
-            if pd.notnull(fila["estado_evaluacion"])
-            else "Pendiente"
+            texto_campo(fila, "estado_evaluacion")
+            or "Pendiente"
         )
 
         opciones_estado = ["Pendiente", "Apto", "No apto"]
@@ -125,9 +139,7 @@ def editar_candidato():
 
         comentario_interno = st.text_area(
             "Comentario interno",
-            fila["comentario_interno"]
-            if pd.notnull(fila["comentario_interno"])
-            else ""
+            texto_campo(fila, "comentario_interno")
         )
 
         guardar = st.form_submit_button("Guardar cambios")
