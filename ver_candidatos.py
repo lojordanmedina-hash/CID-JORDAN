@@ -164,6 +164,15 @@ def pintar_estado(valor):
     return "background-color: #334155; color: white;"
 
 
+def aplicar_estilo_estado(df):
+    styler = df.style
+
+    if hasattr(styler, "map"):
+        return styler.map(pintar_estado, subset=["estado_evaluacion"])
+
+    return styler.applymap(pintar_estado, subset=["estado_evaluacion"])
+
+
 def ver_candidatos():
     conn = sqlite3.connect("seleccion_personal.db", check_same_thread=False)
 
@@ -261,7 +270,7 @@ def ver_candidatos():
 
     if "estado_evaluacion" in df_vista.columns:
         st.dataframe(
-            df_vista.style.applymap(pintar_estado, subset=["estado_evaluacion"]),
+            aplicar_estilo_estado(df_vista),
             use_container_width=True,
             hide_index=True
         )
