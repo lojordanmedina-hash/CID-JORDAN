@@ -1,4 +1,4 @@
-import re
+﻿import re
 import sqlite3
 import pandas as pd
 import streamlit as st
@@ -318,3 +318,4 @@ def ver_candidatos():
     )
 
     conn.close()
+

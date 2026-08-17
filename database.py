@@ -1,4 +1,4 @@
-import sqlite3
+﻿import sqlite3
 
 def crear_base_de_datos():
     conn = sqlite3.connect("seleccion_personal.db")
@@ -42,7 +42,8 @@ def crear_base_de_datos():
 
     conn.commit()
     conn.close()
-    print("✅ Base de datos creada correctamente")
+    print(" Base de datos creada correctamente")
 
 if __name__ == "__main__":
     crear_base_de_datos()
+

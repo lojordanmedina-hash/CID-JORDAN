@@ -1,4 +1,4 @@
-import re
+﻿import re
 import streamlit as st
 import sqlite3
 import pandas as pd
@@ -36,13 +36,13 @@ def preparar_candidatos_para_excel(df):
         "edad": "Edad",
         "estado_civil": "Estado civil",
         "hijos": "Hijos",
-        "formacion_tercer_nivel": "Titulo tercer nivel",
-        "titulo_cuarto_nivel": "Titulo cuarto nivel",
+        "formacion_tercer_nivel": "Título tercer nivel",
+        "titulo_cuarto_nivel": "Título cuarto nivel",
         "anos_experiencia": "Años de experiencia",
-        "empresa": "Ultima empresa",
-        "cargo": "Ultimo cargo",
+        "empresa": "Última empresa",
+        "cargo": "Último cargo",
         "actividades": "Actividades realizadas",
-        "sueldo_ultimo": "Ultimo sueldo",
+        "sueldo_ultimo": "Último sueldo",
         "motivo_salida": "Motivo de salida",
         "disponibilidad": "Disponibilidad",
         "observaciones": "Observaciones"
@@ -58,13 +58,13 @@ def preparar_candidatos_para_excel(df):
         "Edad",
         "Estado civil",
         "Hijos",
-        "Titulo tercer nivel",
-        "Titulo cuarto nivel",
+        "Título tercer nivel",
+        "Título cuarto nivel",
         "Años de experiencia",
-        "Ultima empresa",
-        "Ultimo cargo",
+        "Última empresa",
+        "Último cargo",
         "Actividades realizadas",
-        "Ultimo sueldo",
+        "Último sueldo",
         "Motivo de salida",
         "Disponibilidad",
         "Observaciones"
@@ -178,7 +178,7 @@ def registro_candidatos():
 
     conn.commit()
 
-    st.title("📋 Registro de Candidatos")
+    st.title("Registro de candidatos")
 
     with st.form("form_candidato"):
         col1, col2, col3 = st.columns(3)
@@ -212,7 +212,7 @@ def registro_candidatos():
         motivo = st.text_area("Motivo de salida")
         observaciones = st.text_area("Observaciones")
 
-        guardar = st.form_submit_button("💾 Guardar candidato")
+        guardar = st.form_submit_button("Guardar candidato")
 
     if guardar:
         if not nombre.strip():
@@ -260,11 +260,11 @@ def registro_candidatos():
             ))
 
             conn.commit()
-            st.success("✅ Candidato guardado correctamente")
+            st.success(" Candidato guardado correctamente")
             st.rerun()
 
     st.divider()
-    st.subheader("📊 Candidatos registrados")
+    st.subheader("Candidatos registrados")
 
     df = pd.read_sql("""
         SELECT *
@@ -279,7 +279,7 @@ def registro_candidatos():
 
     df["fecha_registro"] = pd.to_datetime(df["fecha_registro"], errors="coerce")
 
-    st.subheader("🔎 Filtros")
+    st.subheader("Filtros")
 
     col_f1, col_f2, col_f3 = st.columns(3)
 
@@ -335,7 +335,7 @@ def registro_candidatos():
     )
 
     st.divider()
-    st.subheader("⬇️ Descargar candidatos")
+    st.subheader("Descargar candidatos")
 
     tipo_descarga = st.radio(
         "Seleccione qué desea descargar",
@@ -349,7 +349,7 @@ def registro_candidatos():
 
     if tipo_descarga == "Últimos 3 candidatos registrados":
         df_descarga = df.sort_values("id", ascending=False).head(3)
-        titulo_excel = "Ultimos 3 candidatos registrados"
+        titulo_excel = "Últimos 3 candidatos registrados"
         nombre_archivo = "ultimos_3_candidatos.xlsx"
 
     elif tipo_descarga == "Candidatos filtrados por cargo y fecha":
@@ -368,7 +368,7 @@ def registro_candidatos():
     excel = crear_excel_candidatos(df_descarga, titulo_excel)
 
     st.download_button(
-        label="📥 Descargar Excel profesional",
+        label="Descargar Excel profesional",
         data=excel,
         file_name=nombre_archivo,
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"

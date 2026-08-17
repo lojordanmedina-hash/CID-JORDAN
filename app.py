@@ -5,14 +5,14 @@ import os
 import hashlib
 import hmac
 from io import BytesIO
-from referencias import modulo_referencias  # âœ… IMPORT CORRECTO
-from ver_candidatos import ver_candidatos   # âœ… IMPORT CORRECTO
+from referencias import modulo_referencias  #  IMPORT CORRECTO
+from ver_candidatos import ver_candidatos   #  IMPORT CORRECTO
 from editar_candidatos import editar_candidato
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, "seleccion_personal.db")
-# ---------------- CONFIGURACIÃ“N ----------------
-st.set_page_config(page_title="Sistema de SelecciÃ³n", layout="wide")
+# ---------------- CONFIGURACIÓN ----------------
+st.set_page_config(page_title="Sistema de Selección", layout="wide")
 def generar_hash_password(password):
     return hashlib.sha256(password.encode("utf-8")).hexdigest()
 
@@ -35,7 +35,7 @@ def login_admin():
     st.sidebar.subheader("Acceso privado")
 
     password = st.sidebar.text_input(
-        "ContraseÃ±a",
+        "Contraseña",
         type="password"
     )
 
@@ -44,14 +44,14 @@ def login_admin():
             st.session_state.admin_autenticado = True
             st.rerun()
         else:
-            st.sidebar.error("ContraseÃ±a incorrecta")
+            st.sidebar.error("Contraseña incorrecta")
 
     return False
 
 
 def cerrar_sesion():
     if st.session_state.get("admin_autenticado", False):
-        if st.sidebar.button("Cerrar sesiÃ³n"):
+        if st.sidebar.button("Cerrar sesión"):
             st.session_state.admin_autenticado = False
             st.rerun()
 
@@ -128,14 +128,14 @@ div[role="radiogroup"] label:hover{
     background:var(--navy-soft) !important;
 }
 
-/* Texto del menÃº */
+/* Texto del menú */
 div[role="radiogroup"] p{
     color:var(--white) !important;
     font-size:15px;
     font-weight:600;
 }
 
-/* ====== TÃTULOS ====== */
+/* ====== TÍTULOS ====== */
 
 h1{
     color:var(--gold) !important;
@@ -189,7 +189,7 @@ label{
     fill:var(--gold) !important;
 }
 
-/* MenÃº desplegable del selectbox */
+/* Menú desplegable del selectbox */
 div[data-baseweb="popover"],
 div[data-baseweb="menu"],
 ul[role="listbox"],
@@ -243,7 +243,7 @@ button[kind="primaryFormSubmit"]:hover{
     color:var(--navy) !important;
 }
 
-/* ====== CAMPOS VACÃOS / PLACEHOLDER ====== */
+/* ====== CAMPOS VACÍOS / PLACEHOLDER ====== */
 
 input::placeholder,
 textarea::placeholder{
@@ -287,7 +287,7 @@ div[data-testid="stForm"]{
 
 """, unsafe_allow_html=True)
 
-# ---------------- CONEXIÃ“N ----------------
+# ---------------- CONEXIÓN ----------------
 conn = sqlite3.connect(DB_PATH, check_same_thread=False)
 cursor = conn.cursor()
 
@@ -360,12 +360,12 @@ ruta_logo = next((ruta for ruta in rutas_logo if os.path.exists(ruta)), None)
 if ruta_logo:
     st.sidebar.image(ruta_logo, width=220)
 else:
-    st.sidebar.warning("âš ï¸ No se encontrÃ³ el logo en Assets/logo.png")
+    st.sidebar.warning("No se encontró el logo en Assets/logo.png")
 
 st.sidebar.markdown("""
 <div style="text-align:center;">
     <h2 style="color:white; margin-bottom:5px;">
-        Sistema de SelecciÃ³n
+        Sistema de Selección
     </h2>
     <p style="color:#cbd5e1; margin-top:0;">
         Departamento de Talento Humano
@@ -375,8 +375,8 @@ st.sidebar.markdown("""
 
 st.sidebar.markdown("---")
 
-# ---------------- MENÃš ----------------
-st.sidebar.title("MenÃº")
+# ---------------- MENÚ ----------------
+st.sidebar.title("Menú")
 
 admin_activo = login_admin()
 
@@ -392,12 +392,12 @@ if admin_activo:
 cerrar_sesion()
 
 menu = st.sidebar.radio(
-    "Seleccione una opciÃ³n",
+    "Seleccione una opción",
     opciones_menu
 )
 
 # =================================================
-# âž• REGISTRAR CANDIDATO
+#  REGISTRAR CANDIDATO
 # =================================================
 if menu == "Registrar candidato":
 
@@ -405,37 +405,37 @@ if menu == "Registrar candidato":
 
     with st.form("form_candidato"):
 
-        st.subheader("ðŸ§‘ Datos personales")
+        st.subheader("Datos personales")
         nombre = st.text_input("Nombre completo")
         edad = st.number_input("Edad", 18, 80)
         estado_civil = st.selectbox(
             "Estado civil",
-            ["Soltero/a", "Casado/a", "UniÃ³n libre", "Divorciado/a", "Viudo/a"]
+            ["Soltero/a", "Casado/a", "Unión libre", "Divorciado/a", "Viudo/a"]
         )
-        hijos = st.number_input("NÃºmero de hijos", 0, 10)
+        hijos = st.number_input("Número de hijos", 0, 10)
 
-        st.subheader("ðŸŽ“ FormaciÃ³n acadÃ©mica")
-        formacion_tercer = st.selectbox("FormaciÃ³n tercer nivel", ["SÃ­", "No"])
-        titulo_cuarto = st.text_input("TÃ­tulo de cuarto nivel")
+        st.subheader("Formación académica")
+        formacion_tercer = st.selectbox("Formación tercer nivel", ["Sí", "No"])
+        titulo_cuarto = st.text_input("Título de cuarto nivel")
 
-        st.subheader("ðŸ’¼ Experiencia laboral")
-        anos_experiencia = st.number_input("AÃ±os de experiencia", 0, 40)
-        empresa = st.text_input("Ãšltima empresa")
-        cargo = st.text_input("Ãšltimo cargo")
+        st.subheader("Experiencia laboral")
+        anos_experiencia = st.number_input("Años de experiencia", 0, 40)
+        empresa = st.text_input("Última empresa")
+        cargo = st.text_input("Último cargo")
         actividades = st.text_area("Actividades realizadas")
-        sueldo_ultimo = st.number_input("Ãšltimo sueldo", min_value=0.0, step=10.0)
+        sueldo_ultimo = st.number_input("Último sueldo", min_value=0.0, step=10.0)
         motivo_salida = st.text_input("Motivo de salida")
 
-        st.subheader("ðŸ“Œ PostulaciÃ³n")
+        st.subheader("Postulación")
         cargo_postula = st.text_input("Cargo al que postula")
         disponibilidad = st.selectbox(
             "Disponibilidad",
-            ["Inmediata", "15 dÃ­as", "30 dÃ­as", "A convenir"]
+            ["Inmediata", "15 días", "30 días", "A convenir"]
         )
 
         observaciones = st.text_area("Observaciones")
 
-        guardar = st.form_submit_button("ðŸ’¾ Guardar candidato")
+        guardar = st.form_submit_button("Guardar candidato")
 
     if guardar:
         cursor.execute("""
@@ -475,7 +475,7 @@ if menu == "Registrar candidato":
         ))
 
         conn.commit()
-        st.success("âœ… Candidato registrado correctamente")
+        st.success(" Candidato registrado correctamente")
 
 # =================================================
 # VER CANDIDATOS
@@ -484,16 +484,17 @@ elif menu == "Ver candidatos":
     ver_candidatos()
 
 # =================================================
-# âœï¸ EDITAR CANDIDATO
+#  EDITAR CANDIDATO
 # =================================================
 elif menu == "Editar candidato":
     editar_candidato()
 
 # =================================================
-# ðŸ“ž REFERENCIAS LABORALES
+# REFERENCIAS LABORALES
 # =================================================
 elif menu == "Referencias laborales":
-    modulo_referencias()   # âœ… LLAMADA AL MÃ“DULO
+    modulo_referencias()   #  LLAMADA AL MÓDULO
 
 # ---------------- CIERRE ----------------
 conn.close()
+

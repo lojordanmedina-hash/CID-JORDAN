@@ -1,4 +1,4 @@
-import re
+﻿import re
 import streamlit as st
 import sqlite3
 import pandas as pd
@@ -24,7 +24,7 @@ def preparar_referencias_para_excel(df):
         "empresa": "Empresa",
         "nombre_referente": "Nombre del referente",
         "cargo_referente": "Cargo del referente",
-        "telefono": "Telefono",
+        "telefono": "Teléfono",
         "relacion": "Relacion",
         "desempeno": "Desempeno del candidato",
         "trabajo_equipo": "Trabajo en equipo",
@@ -39,7 +39,7 @@ def preparar_referencias_para_excel(df):
         "Empresa",
         "Nombre del referente",
         "Cargo del referente",
-        "Telefono",
+        "Teléfono",
         "Relacion",
         "Desempeno del candidato",
         "Trabajo en equipo",
@@ -141,7 +141,7 @@ def modulo_referencias():
     """)
     conn.commit()
 
-    st.title("📞 Referencias laborales")
+    st.title("Referencias laborales")
 
     df_candidatos = pd.read_sql(
         "SELECT id, nombre_completo FROM candidatos ORDER BY nombre_completo",
@@ -181,7 +181,7 @@ def modulo_referencias():
             ["SI", "NO", "CON RESERVAS"]
         )
 
-        guardar = st.form_submit_button("💾 Guardar referencia")
+        guardar = st.form_submit_button("Guardar referencia")
 
     if guardar:
         cursor.execute("""
@@ -211,11 +211,11 @@ def modulo_referencias():
         ))
 
         conn.commit()
-        st.success("✅ Referencia guardada correctamente")
+        st.success(" Referencia guardada correctamente")
         st.rerun()
 
     st.divider()
-    st.subheader("📋 Referencias registradas")
+    st.subheader("Referencias registradas")
 
     df_ref = pd.read_sql("""
         SELECT
@@ -256,7 +256,7 @@ def modulo_referencias():
         )
 
         st.divider()
-        st.subheader("⬇️ Descargar referencias")
+        st.subheader(" Descargar referencias")
 
         tipo_descarga = st.radio(
             "Seleccione qué desea descargar",
@@ -270,7 +270,7 @@ def modulo_referencias():
 
         if tipo_descarga == "Última referencia registrada":
             df_descarga = df_ref.head(1)
-            titulo_excel = "Ultima referencia registrada"
+            titulo_excel = "Última referencia registrada"
             nombre_archivo = f"ultima_referencia_{limpiar_nombre_archivo(candidato)}.xlsx"
 
         elif tipo_descarga == "Referencia seleccionada":
@@ -305,7 +305,7 @@ def modulo_referencias():
         )
 
         st.download_button(
-            label="📥 Descargar Excel profesional",
+            label="Descargar Excel profesional",
             data=excel,
             file_name=nombre_archivo,
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
